@@ -26,6 +26,11 @@ class Handler(SimpleHTTPRequestHandler):
                 )
                 body = json.dumps(result, allow_nan=False).encode()
                 self.send_response(200)
+                if q.get("download") == ["1"]:
+                    filename = f"simulated-results-seed-{result['seed']}-patches-{result['budget']}.json"
+                    self.send_header(
+                        "Content-Disposition", f'attachment; filename="{filename}"'
+                    )
             except (ValueError, TypeError) as error:
                 body = json.dumps({"error": str(error)}).encode()
                 self.send_response(400)

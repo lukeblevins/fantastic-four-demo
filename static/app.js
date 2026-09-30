@@ -212,7 +212,9 @@ function renderReview() {
     `<div><small>Test accuracy · before review</small><strong>${pct(mm.accuracy)}</strong><small>95% Wilson interval ${pct(mm.accuracy_ci[0])}–${pct(mm.accuracy_ci[1])}</small></div><div><small>AUROC · ranking discrimination</small><strong>${mm.auc.toFixed(3)}</strong><small>1.0 = perfect ranking; 0.5 = chance</small></div><div><small>Brier score · probability error</small><strong>${mm.brier.toFixed(3)}</strong><small>Lower is better</small></div><div><small>Errors by simulated class</small><strong>${mm.by_class["0"].errors} / ${mm.by_class["1"].errors}</strong><small>ER negative (${mm.by_class["0"].n}) / positive (${mm.by_class["1"].n})</small></div>`;
   const diff = rules.confidence.errors - rules.disagreement.errors;
   $("conclusion").textContent =
-    `In this simulated run, disagreement flags leave ${Math.abs(diff)} ${diff > 0 ? "fewer" : diff < 0 ? "more" : "additional"} ${Math.abs(diff) === 1 ? "error" : "errors"} than confidence flags at the same review rate. This result depends on the simulation and is not evidence of clinical benefit.`;
+    diff === 0
+      ? "In this simulated run, both review rules leave the same number of errors at the selected review rate. This result does not establish clinical benefit."
+      : `In this simulated run, disagreement flags leave ${Math.abs(diff)} ${diff > 0 ? "fewer" : diff < 0 ? "more" : "additional"} ${Math.abs(diff) === 1 ? "error" : "errors"} than confidence flags at the same review rate. This result depends on the simulation and is not evidence of clinical benefit.`;
   const a = new Set(rules.confidence.flagged),
     b = new Set(rules.disagreement.flagged);
   $("rows").innerHTML = m.rows
@@ -290,7 +292,10 @@ $("present").onclick = () => {
     : "Presentation view";
 };
 document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape") document.body.classList.remove("presentation");
+  if (e.key === "Escape") {
+    document.body.classList.remove("presentation");
+    $("present").textContent = "Presentation view";
+  }
 });
 document.querySelectorAll("[data-tab]").forEach(
   (b) =>
@@ -305,15 +310,29 @@ document.querySelectorAll("[data-tab]").forEach(
 );
 $("download").onclick = () => {
   if (!data) return;
-  const blob = new Blob([JSON.stringify(data, null, 2)], {
+  const a = document.createElement("a");
+  let url;
+  if (window.DEMO_CACHE) {
+    const blob = new Blob([JSON.stringify(data, null, 2)], {
       type: "application/json",
-    }),
-    url = URL.createObjectURL(blob),
-    a = document.createElement("a");
-  a.href = url;
+    });
+    url = URL.createObjectURL(blob);
+    a.href = url;
+  } else {
+    a.href =
+      "api/experiment?" +
+      new URLSearchParams({
+        seed: data.seed,
+        budget: data.budget,
+        repeats: data.repeats,
+        download: 1,
+      });
+  }
   a.download = `simulated-results-seed-${data.seed}-patches-${data.budget}.json`;
+  document.body.appendChild(a);
   a.click();
-  URL.revokeObjectURL(url);
+  a.remove();
+  if (url) setTimeout(() => URL.revokeObjectURL(url), 1000);
 };
 ["budget", "repeats", "seed"].forEach(
   (id) =>

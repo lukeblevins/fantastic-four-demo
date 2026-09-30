@@ -36,7 +36,8 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font: 16px/1.55 system-ui,
+  font:
+    16px/1.55 system-ui,
     -apple-system,
     sans-serif;
   font-family: var(--md-ref-typeface-plain);
@@ -657,7 +658,8 @@ header #present {
 }
 
 button {
-  transition: background 160ms ease,
+  transition:
+    background 160ms ease,
     transform 180ms cubic-bezier(0.2, 0, 0, 1);
 }
 
@@ -782,6 +784,44 @@ button:active {
   }
 }
 
-header { position: sticky; top: 0; z-index: 20; }
-#download { z-index: 21; }
-@media (max-width: 850px) { #download { z-index: auto; } }
+header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+#download {
+  z-index: 21;
+}
+@media (max-width: 850px) {
+  #download {
+    z-index: auto;
+  }
+}
+
+/* Keep export in the app bar so it remains clickable above the workspace. */
+header #present {
+  margin-right: 12px;
+  margin-left: auto;
+}
+header #download {
+  position: relative;
+  flex: none;
+  margin: 0;
+}
+header {
+  gap: 12px;
+}
+@media (max-width: 850px) {
+  header {
+    flex-wrap: wrap;
+    height: auto;
+    min-height: 64px;
+    padding: 8px 18px;
+  }
+  header #present {
+    margin: 0 0 0 auto;
+  }
+  header #download {
+    margin-left: auto;
+  }
+}
