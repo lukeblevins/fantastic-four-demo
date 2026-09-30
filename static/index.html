@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Fantastic Four · Sampling & Reliability</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="./"
+        ><span class="mark">F<span>4</span></span> Fantastic Four
+        <small>Sampling demo</small></a
+      ><md-outlined-button id="present">Presentation view</md-outlined-button>
+    </header>
+    <main>
+      <div class="eyebrow">ER prediction / Experiment workspace</div>
+      <h1>Sampling and reliability</h1>
+      <p class="intro">
+        Compare patch selection and review rules using the same model.
+      </p>
+      <div class="notice">
+        <strong>SIMULATED DATA</strong
+        ><span
+          >This demo explains the experiment. It does not use patient images or
+          a pretrained pathology encoder. These are not clinical results.</span
+        >
+      </div>
+      <section class="controls">
+        <label
+          >Patches per case<select id="budget">
+            <option>16</option>
+            <option selected>32</option>
+            <option>64</option>
+          </select></label
+        ><label
+          >Repeated samples<select id="repeats">
+            <option>10</option>
+            <option selected>20</option>
+            <option>40</option>
+          </select></label
+        ><label
+          >Experiment seed<select id="seed">
+            <option>7</option>
+            <option selected>42</option>
+            <option>101</option>
+          </select></label
+        ><md-filled-button id="run" class="primary"
+          >Run comparison <span>↗</span></md-filled-button
+        ><span id="status" role="status">Preparing experiment…</span>
+      </section>
+      <nav aria-label="Demo sections">
+        <button class="active" data-tab="sampling">
+          <svg
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            width="48"
+            height="48"
+            viewBox="0 -960 960 960"
+          >
+            <path
+              d="M180-510q-24.75 0-42.37-17.63Q120-545.25 120-570v-210q0-24.75 17.63-42.38Q155.25-840 180-840h210q24.75 0 42.38 17.62Q450-804.75 450-780v210q0 24.75-17.62 42.37Q414.75-510 390-510H180Zm0 390q-24.75 0-42.37-17.63Q120-155.25 120-180v-210q0-24.75 17.63-42.38Q155.25-450 180-450h210q24.75 0 42.38 17.62Q450-414.75 450-390v210q0 24.75-17.62 42.37Q414.75-120 390-120H180Zm390-390q-24.75 0-42.37-17.63Q510-545.25 510-570v-210q0-24.75 17.63-42.38Q545.25-840 570-840h210q24.75 0 42.38 17.62Q840-804.75 840-780v210q0 24.75-17.62 42.37Q804.75-510 780-510H570Zm0 390q-24.75 0-42.37-17.63Q510-155.25 510-180v-210q0-24.75 17.63-42.38Q545.25-450 570-450h210q24.75 0 42.38 17.62Q840-414.75 840-390v210q0 24.75-17.62 42.37Q804.75-120 780-120H570ZM180-570h210v-210H180v210Zm390 0h210v-210H570v210Zm0 390h210v-210H570v210Zm-390 0h210v-210H180v210Zm390-390Zm0 180Zm-180 0Zm0-180Z"
+            /></svg
+          ><span>Cases</span></button
+        ><button data-tab="review">
+          <svg
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            width="48"
+            height="48"
+            viewBox="0 -960 960 960"
+          >
+            <path
+              d="M292.5-473.38Q284-464.75 284-452v145q0 12.75 8.68 21.37 8.67 8.63 21.5 8.63 12.82 0 21.32-8.63 8.5-8.62 8.5-21.37v-145q0-12.75-8.68-21.38-8.67-8.62-21.5-8.62-12.82 0-21.32 8.62Zm332-215Q616-679.75 616-667v360q0 12.75 8.68 21.37 8.67 8.63 21.5 8.63 12.82 0 21.32-8.63 8.5-8.62 8.5-21.37v-360q0-12.75-8.68-21.38-8.67-8.62-21.5-8.62-12.82 0-21.32 8.62Zm-166 302Q450-377.75 450-365v58q0 12.75 8.68 21.37 8.67 8.63 21.5 8.63 12.82 0 21.32-8.63 8.5-8.62 8.5-21.37v-58q0-12.75-8.68-21.38-8.67-8.62-21.5-8.62-12.82 0-21.32 8.62ZM180-120q-24 0-42-18t-18-42v-600q0-24 18-42t42-18h600q24 0 42 18t18 42v600q0 24-18 42t-42 18H180Zm0-60h600v-600H180v600Zm0-600v600-600Zm321.5 289.32q8.5-8.67 8.5-21.5 0-12.82-8.68-21.32-8.67-8.5-21.5-8.5-12.82 0-21.32 8.68-8.5 8.67-8.5 21.5 0 12.82 8.68 21.32 8.67 8.5 21.5 8.5 12.82 0 21.32-8.68Z"
+            /></svg
+          ><span>Review</span></button
+        ><button data-tab="method">
+          <svg
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            width="48"
+            height="48"
+            viewBox="0 -960 960 960"
+          >
+            <path
+              d="M172-120q-41.78 0-59.39-39T124-230l248-280v-270h-52q-12.75 0-21.37-8.68-8.63-8.67-8.63-21.5 0-12.82 8.63-21.32 8.62-8.5 21.37-8.5h320q12.75 0 21.38 8.68 8.62 8.67 8.62 21.5 0 12.82-8.62 21.32-8.63 8.5-21.38 8.5h-52v270l248 280q29 32 11.39 71T788-120H172Zm-12-60h640L528-488v-292h-96v292L160-180Zm318-300Z"
+            /></svg
+          ><span>Method</span></button
+        ><md-text-button id="download">Download results ↓</md-text-button>
+      </nav>
+      <section id="sampling" class="tab active">
+        <div class="section-head">
+          <div>
+            <h2>Patch sampling</h2>
+            <p>
+              A patch is a small part of a tissue image. Outlines show the
+              selected patches.
+            </p>
+          </div>
+          <div class="case-controls">
+            <label>Simulated case<select id="case"></select></label
+            ><md-filled-tonal-button id="unstable"
+              >Find an unstable case</md-filled-tonal-button
+            >
+          </div>
+        </div>
+        <div class="sample-controls">
+          <label
+            >Sample <output id="drawLabel">1</output
+            ><input id="draw" type="range" min="0" max="19" value="0" /></label
+          ><md-filled-tonal-button id="play"
+            >Play samples</md-filled-tonal-button
+          ><span id="caseTruth"></span
+          ><span class="legend"
+            >Purple / pink = simulated feature values · white = selected</span
+          >
+        </div>
+        <div class="two">
+          <article class="card">
+            <div class="card-head">
+              <h3>Random sampling</h3>
+              <span class="tag">BASELINE</span>
+            </div>
+            <canvas
+              id="randomMap"
+              width="720"
+              height="400"
+              aria-label="Randomly selected patches"
+            ></canvas>
+            <div class="stats" id="randomStats"></div>
+            <canvas
+              class="trace"
+              id="randomTrace"
+              width="720"
+              height="170"
+              aria-label="Repeated random sample probabilities"
+            ></canvas>
+          </article>
+          <article class="card">
+            <div class="card-head">
+              <h3>Spatially distributed sampling</h3>
+              <span class="tag mint">COMPARISON</span>
+            </div>
+            <canvas
+              id="spatialMap"
+              width="720"
+              height="400"
+              aria-label="Spatially distributed patches"
+            ></canvas>
+            <div class="stats" id="spatialStats"></div>
+            <canvas
+              class="trace"
+              id="spatialTrace"
+              width="720"
+              height="170"
+              aria-label="Repeated spatial sample probabilities"
+            ></canvas>
+          </article>
+        </div>
+        <p class="caption">
+          The probability traces use the same 0–100% scale. The dashed line is
+          the classification threshold selected on validation cases. Variance
+          measures how much the predictions change across samples.
+        </p>
+      </section>
+      <section id="review" class="tab">
+        <div class="section-head">
+          <div>
+            <h2>Which cases would we flag?</h2>
+            <p>
+              Both rules flag the same number of cases. Compare errors in the
+              cases left for classification.
+            </p>
+          </div>
+          <label
+            >Sampling method<select id="method">
+              <option value="random">Random</option>
+              <option value="spatial">Spatially distributed</option>
+            </select></label
+          >
+        </div>
+        <div class="sample-controls">
+          <label
+            >Cases flagged for review<select id="rate">
+              <option value="0">0%</option>
+              <option value="10">10%</option>
+              <option value="20" selected>20%</option>
+              <option value="30">30%</option>
+              <option value="40">40%</option>
+            </select></label
+          ><span
+            >Confidence = strength of the average prediction. Disagreement =
+            variance across repeated samples.</span
+          >
+        </div>
+        <div class="two" id="reviewCards"></div>
+        <div class="two">
+          <article class="card">
+            <h3>Error vs. retained cases</h3>
+            <p class="caption">
+              Teal: confidence rule · Blue: disagreement rule · Lower error is
+              better
+            </p>
+            <canvas id="risk" width="720" height="330"></canvas>
+          </article>
+          <article class="card">
+            <h3>Do probabilities match outcomes?</h3>
+            <p class="caption">
+              Calibration: average predicted ER probability vs. observed
+              positive fraction. Dashed line: perfect agreement.
+            </p>
+            <canvas id="calibration" width="720" height="330"></canvas>
+          </article>
+        </div>
+        <div id="metrics" class="metric-grid"></div>
+        <p id="conclusion" class="notice"></p>
+        <details>
+          <summary>Case-level results</summary>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Case</th>
+                  <th>Simulated label</th>
+                  <th>ER probability</th>
+                  <th>Variance</th>
+                  <th>Confidence flag</th>
+                  <th>Disagreement flag</th>
+                </tr>
+              </thead>
+              <tbody id="rows"></tbody>
+            </table>
+          </div>
+        </details>
+      </section>
+      <section id="method" class="tab">
+        <h2>One controlled comparison</h2>
+        <div class="steps">
+          <article>
+            <b>01</b>
+            <h3>Separate the cases</h3>
+            <p>
+              120 training, 40 validation, and 80 test cases. Each simulated
+              patient appears in one split only.
+            </p>
+          </article>
+          <article>
+            <b>02</b>
+            <h3>Fit the classifier</h3>
+            <p>
+              A fixed toy feature map creates three numbers per patch. A
+              logistic classifier learns from training cases. Validation selects
+              the decision threshold.
+            </p>
+          </article>
+          <article>
+            <b>03</b>
+            <h3>Change the sampling</h3>
+            <p>
+              Random sampling selects anywhere in the grid. Spatial sampling
+              selects one patch from each equal-area region. Both use the same
+              patch count.
+            </p>
+          </article>
+          <article>
+            <b>04</b>
+            <h3>Compare reliability</h3>
+            <p>
+              Repeat sampling with the model fixed. Use the same predictions for
+              both review rules. Report errors at matched review rates.
+            </p>
+          </article>
+        </div>
+        <div class="two">
+          <article class="card">
+            <h3>What works in this demo</h3>
+            <ul>
+              <li>Reproducible simulated cases and separate data splits</li>
+              <li>A fitted lightweight classifier</li>
+              <li>Repeated patch sampling with matched budgets</li>
+              <li>Review flags, accuracy intervals, AUROC, and calibration</li>
+              <li>Downloadable case predictions and experiment settings</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3>What the research still needs</h3>
+            <ul>
+              <li>Real H&E slides with verified ER labels</li>
+              <li>Quality control and a frozen pathology encoder</li>
+              <li>Patient-level feature aggregation and external evaluation</li>
+              <li>Evidence that disagreement adds value beyond confidence</li>
+            </ul>
+            <p>
+              Lower variance does not prove a prediction is correct. Simulated
+              results do not establish clinical benefit or novelty.
+            </p>
+          </article>
+        </div>
+        <article class="card sources">
+          <h3>Research behind the experiment</h3>
+          <p>
+            <a
+              href="https://doi.org/10.3390/cancers18152475"
+              target="_blank"
+              rel="noreferrer"
+              >Atiya et al. (2026)</a
+            >
+            · Frozen representations and lightweight classifiers
+          </p>
+          <p>
+            <a
+              href="https://doi.org/10.3390/cancers18162540"
+              target="_blank"
+              rel="noreferrer"
+              >Koyun et al. (2026)</a
+            >
+            · Sampling-induced prediction uncertainty
+          </p>
+          <p>
+            <a
+              href="https://doi.org/10.1038/s41467-022-34025-x"
+              target="_blank"
+              rel="noreferrer"
+              >Dolezal et al. (2022)</a
+            >
+            · Uncertainty-informed pathology predictions
+          </p>
+        </article>
+      </section>
+      <footer>
+        FANTASTIC FOUR
+        <span>ER = estrogen receptor · H&E = hematoxylin and eosin stain</span
+        ><span>Research demonstration · simulated cases only</span>
+      </footer>
+    </main>
+    <script src="vendor/material.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

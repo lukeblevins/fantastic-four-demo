@@ -1,0 +1,13 @@
+{
+  "name": "fantastic-four-demo-ui",
+  "private": true,
+  "scripts": {
+    "build": "esbuild ui/material.js --bundle --minify --format=iife --outfile=static/vendor/material.js --legal-comments=linked"
+  },
+  "dependencies": {
+    "@material/web": "2.4.1"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.12"
+  }
+}
