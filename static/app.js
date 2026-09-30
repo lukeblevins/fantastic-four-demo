@@ -305,7 +305,9 @@ document.querySelectorAll("[data-tab]").forEach(
         .querySelectorAll("[data-tab],.tab")
         .forEach((x) => x.classList.remove("active"));
       b.classList.add("active");
-      $(b.dataset.tab).classList.add("active");
+      const section = $(b.dataset.tab);
+      section.classList.add("active");
+      section.scrollIntoView({ block: "start" });
     }),
 );
 $("download").onclick = () => {

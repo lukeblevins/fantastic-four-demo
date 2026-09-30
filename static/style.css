@@ -262,6 +262,7 @@ nav button.active {
 }
 
 .tab {
+  scroll-margin-top: 110px;
   display: none;
 }
 
